@@ -6,7 +6,7 @@
  * http://720kb.github.io/angular-tooltips
  * 
  * MIT license
- * Mon Jun 06 2016
+ * Mon Jul 18 2016
  */
 /*global angular,window*/
 (function withAngular(angular, window) {
@@ -611,14 +611,11 @@
             }
           }
           , onTooltipShowTrigger = function onTooltipShowTrigger(newValue) {
-
             if (newValue) {
-
               if (oldTooltipShowTrigger) {
-
-                tooltipElement.off(oldTooltipShowTrigger);
+                tipContElement.off(oldTooltipShowTrigger);
               }
-              tooltipElement.on(newValue, onTooltipShow);
+              tipContElement.on(newValue, onTooltipShow);
               oldTooltipShowTrigger = newValue;
             }
           }
