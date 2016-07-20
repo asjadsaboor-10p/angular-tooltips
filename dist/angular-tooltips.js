@@ -6,7 +6,7 @@
  * http://720kb.github.io/angular-tooltips
  * 
  * MIT license
- * Mon Jul 18 2016
+ * Wed Jul 20 2016
  */
 /*global angular,window*/
 (function withAngular(angular, window) {
@@ -585,6 +585,7 @@
                   tooltipElement.removeClass('_force-hidden'); //see lines below, this forces to hide tooltip when is empty
                   tipTipElement.empty();
                   /*Recalling function so that click event can be attached if close button is enabled. Issue exist due to async call */
+                  /*eslint-disable no-use-before-define*/
                   onTooltipCloseButtonChange($attrs.tooltipCloseButton);
                   tipTipElement.append(closeButtonElement);
                   tipTipElement.append($compile(response.data)(scope));
