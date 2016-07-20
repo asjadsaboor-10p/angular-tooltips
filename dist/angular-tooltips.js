@@ -587,6 +587,10 @@
                   /*Recalling function so that click event can be attached if close button is enabled. Issue exist due to async call */
                   /*eslint-disable no-use-before-define*/
                   onTooltipCloseButtonChange($attrs.tooltipCloseButton);
+
+                  /*Use tooltip-template-url-message to set any message/data in scope so that they can be used in template */
+                  scope.toolTipMessage = $attrs.tooltipTemplateUrlMessage ? $attrs.tooltipTemplateUrlMessage : scope.toolTipMessage;
+
                   tipTipElement.append(closeButtonElement);
                   tipTipElement.append($compile(response.data)(scope));
                   $timeout(function doLater() {
