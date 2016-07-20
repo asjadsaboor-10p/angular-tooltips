@@ -801,6 +801,7 @@
       'transclude': 'element',
       'priority': 1,
       'terminal': true,
+      'scope' : {},
       'link': linkingFunction
     };
   }];
