@@ -6,7 +6,7 @@
  * http://720kb.github.io/angular-tooltips
  * 
  * MIT license
- * Wed Jul 20 2016
+ * Thu Jul 21 2016
  */
 /*global angular,window*/
 (function withAngular(angular, window) {
@@ -240,7 +240,7 @@
       }
     };
   }
-  , tooltipDirective = /*@ngInject*/ ["$log", "$http", "$compile", "$timeout", "$controller", "$injector", "tooltipsConf", function tooltipDirective($log, $http, $compile, $timeout, $controller, $injector, tooltipsConf) {
+  , tooltipDirective = /*@ngInject*/ ["$log", "$http", "$compile", "$timeout", "$controller", "$injector", "tooltipsConf", "$templateCache", function tooltipDirective($log, $http, $compile, $timeout, $controller, $injector, tooltipsConf, $templateCache) {
 
     var linkingFunction = function linkingFunction($scope, $element, $attrs, $controllerDirective, $transcludeFunc) {
 
@@ -575,30 +575,36 @@
           }
           , onTooltipTemplateUrlChange = function onTooltipTemplateUrlChange(newValue) {
 
+            var applyTemplate = function applyTemplate(template) {
+                      tooltipElement.removeClass('_force-hidden'); //see lines below, this forces to hide tooltip when is empty
+                      tipTipElement.empty();
+                      /*Recalling function so that click event can be attached if close button is enabled. Issue exist due to async call */
+                      /*eslint-disable no-use-before-define*/
+                      onTooltipCloseButtonChange($attrs.tooltipCloseButton);
+
+                      /*Use tooltip-template-url-message to set any message/data in scope so that they can be used in template */
+                      scope.toolTipMessage = $attrs.tooltipTemplateUrlMessage ? $attrs.tooltipTemplateUrlMessage : scope.toolTipMessage;
+
+                      tipTipElement.append(closeButtonElement);
+                      tipTipElement.append($compile(template)(scope));
+                      $timeout(function doLater() {
+
+                        onTooltipShow();
+                      });
+                    },
+             template;
+
             if (newValue) {
-
-              $http.get(newValue).then(function onResponse(response) {
-
-                if (response &&
-                  response.data) {
-
-                  tooltipElement.removeClass('_force-hidden'); //see lines below, this forces to hide tooltip when is empty
-                  tipTipElement.empty();
-                  /*Recalling function so that click event can be attached if close button is enabled. Issue exist due to async call */
-                  /*eslint-disable no-use-before-define*/
-                  onTooltipCloseButtonChange($attrs.tooltipCloseButton);
-
-                  /*Use tooltip-template-url-message to set any message/data in scope so that they can be used in template */
-                  scope.toolTipMessage = $attrs.tooltipTemplateUrlMessage ? $attrs.tooltipTemplateUrlMessage : scope.toolTipMessage;
-
-                  tipTipElement.append(closeButtonElement);
-                  tipTipElement.append($compile(response.data)(scope));
-                  $timeout(function doLater() {
-
-                    onTooltipShow();
-                  });
-                }
-              });
+              template = $templateCache.get(newValue);
+              if (template) {
+                applyTemplate(template);
+              } else {
+                $http.get(newValue).then(function onResponse(response) {
+                  if (response && response.data) {
+                    applyTemplate(response.data);
+                  }
+                });
+              }
             } else {
               //hide tooltip because is empty
               tipTipElement.empty();
